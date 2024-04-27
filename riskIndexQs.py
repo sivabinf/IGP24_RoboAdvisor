@@ -1,5 +1,6 @@
 import uuid
 import csv
+import math
 
 def collect_responses_and_calculate_score(questions):
     total_score = 0
@@ -94,7 +95,10 @@ questions = {
 }
 max_possible_score = sum(max(options.values()) for options in questions.values())
 risk_score, user_responses = collect_responses_and_calculate_score(questions)
-risk_percentage = risk_score / max_possible_score  # This now gives a value from 0.0 to just below 1.0
+risk_percentage = risk_score / max_possible_score  # This gives a value from 0.0 to just below 1.0
+
+# Convert risk percentage to a decile index
+risk_decile = min(math.floor(risk_percentage * 10) + 1, 10)
 
 user_id = uuid.uuid4().hex
 investment_preference = user_responses.get("User preference. What are your investment preferences?", "No selection made")
@@ -104,8 +108,8 @@ with open('user_data.csv', mode='a', newline='') as file:
     writer = csv.writer(file)
     # Write header if the file is newly created
     if file.tell() == 0:
-        writer.writerow(["User ID", "Risk Score", "Investment Preference"])
-    writer.writerow([user_id, f"{risk_percentage:.2f}", investment_preference])
+        writer.writerow(["User ID", "Risk Score", "Risk Decile", "Investment Preference"])
+    writer.writerow([user_id, f"{risk_percentage:.2f}", risk_decile, investment_preference])
 
 print(f"Data saved for User ID: {user_id}")
 
@@ -113,4 +117,5 @@ print(f"Data saved for User ID: {user_id}")
 print(f"\nUser ID: {user_id}")
 print(f"Total Risk Score: {risk_score}")
 print(f"Risk Percentage: {risk_percentage:.2f}%")
+print(f"Risk Decile: {risk_decile}")
 print(f"Investment Preference: {investment_preference}")

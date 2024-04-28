@@ -15,11 +15,11 @@ def kalman_filter(data):
     process_variance = 2e-4 # Estimated process variance, Q.
     
     # Instantiating default vectors for filter parameters
-    x_hat=np.zeros(data_shape)      # a posteriori state estimate of x
-    P=np.zeros(data_shape)         # a posteriori estimate error covariance
-    x_hat_bar=np.zeros(data_shape) # a priori state estimate of x
-    P_bar=np.zeros(data_shape)    # a priori estimate error covariance
-    K=np.zeros(data_shape)         # gain or blending factor that minimizes the a posteriori error covariance
+    x_hat = np.zeros(data_shape)      # a posteriori state estimate of x
+    P = np.zeros(data_shape)         # a posteriori estimate error covariance
+    x_hat_bar = np.zeros(data_shape) # a priori state estimate of x
+    P_bar = np.zeros(data_shape)    # a priori estimate error covariance
+    K = p.zeros(data_shape)         # gain or blending factor that minimizes the a posteriori error covariance
 
     R = 0.1**2 # estimate of measurement error covariance
 

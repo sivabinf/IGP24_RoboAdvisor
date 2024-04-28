@@ -68,7 +68,7 @@ def arch_volatility_predictor(data):
     # Predicts volatility of ETFs using ARCH model.
     # data: input returns data (% change).
     hyper_models = {'AR': {'best_params': {'p': 2, 'q': 1}}} # Hyper-parameters to optimise predictions.
-    arch_tuned = arch_model(data, **hyper_models['AR']['best_params']).fit(update_freq=3, disp='off') # Fitting arch model on ETF returns data.
+    arch_tuned = arch_model(data, **hyper_models['AR']['best_params'], vol='ARCH').fit(update_freq=3, disp='off') # Fitting arch model on ETF returns data.
     arch_forecast_var = arch_tuned.forecast(horizon=1).variance.iloc[0,0] # Prediction volatility for the next instance.
     return arch_forecast_var
 

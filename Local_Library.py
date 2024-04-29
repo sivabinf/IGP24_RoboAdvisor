@@ -5,7 +5,7 @@ from arch import arch_model
 from statsmodels.tsa.arima.model import ARIMA
 
 def kalman_filter(data):
-    # Source Code is stored locally as the support for python inbuilt function is no longer supported after one of the recent python updates.
+    # Source Code is stored locally as the support for python inbuilt function is no longer available after one of the recent python updates.
     # Welch, G. and Bishop, G., 1995. An introduction to the Kalman filter., pages 11-15
     # https://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf    
     # data: input numpy.ndarray data

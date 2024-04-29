@@ -161,7 +161,7 @@ def data_prep(data, feature, window, dropna=True, scale=True):
     return data   
     
 def data_prep_arima(data, input_feature, feature, window, dropna=True, scale=True):
-    # Prepares input data for subsequent machine learning operations (LSTM and SVR).
+    # Prepares input data for subsequent machine learning operations (LSTM and ARIMA).
     # data = Actual return data (pd.Series format).
     # input_feature: primary input feature (Actual_Return).
     # feature: name of the estimated feature with variance (Actual_Variance).
@@ -229,7 +229,7 @@ def data_prep_arima(data, input_feature, feature, window, dropna=True, scale=Tru
     return data
     
 def data_prep_svr(data, input_feature, feature, window, dropna=True, scale=True):
-    # Prepares input data for subsequent machine learning operations (LSTM and SVR).
+    # Prepares input data for subsequent machine learning operations (SVR).
     # data = Actual return data (pd.Series format).
     # input_feature: primary input feature (Actual_Return).
     # feature: name of the estimated feature with variance (Actual_Variance).

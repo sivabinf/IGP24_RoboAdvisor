@@ -17,7 +17,7 @@ def kalman_filter(data):
     P = np.zeros(data_shape)         # a posteriori estimate error covariance
     x_hat_bar = np.zeros(data_shape) # a priori state estimate of x
     P_bar = np.zeros(data_shape)    # a priori estimate error covariance
-    K = p.zeros(data_shape)         # gain or blending factor that minimizes the a posteriori error covariance
+    K = np.zeros(data_shape)         # gain or blending factor that minimizes the a posteriori error covariance
     R = 0.1**2 # estimate of measurement error covariance    
     x_hat[0] = 0.0 # Initial state value for posteriori state estimate of x
     P[0] = 1.0 # Initial state value for posteriori estimate error covariance

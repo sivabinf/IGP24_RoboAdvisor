@@ -5,42 +5,31 @@ from arch import arch_model
 from statsmodels.tsa.arima.model import ARIMA
 
 def kalman_filter(data):
-    # Source Code is stored locally as the support for python inbuilt function is no longer supported after one of the recent python updates.
-
-    # A Python implementation of the example given in pages 11-15 of "An
-    # Introduction to the Kalman Filter" by Greg Welch and Gary Bishop,
-    # University of North Carolina at Chapel Hill, Department of Computer
-    # Science, TR 95-041,
-    # https://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf
+    # Source Code is stored locally as the support for python inbuilt function is no longer available after one of the recent python updates.
+    # Welch, G. and Bishop, G., 1995. An introduction to the Kalman filter., pages 11-15
+    # https://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf    
+    # data: input numpy.ndarray data
     
-    # data: input numpy.ndarray.
-    
-    sz = data.shape # Shape of the data.
-    Q = 2e-4 # Estimated process variance, Q.
-    
-    # allocate space for arrays
-    xhat=np.zeros(sz)      # a posteri estimate of x
-    P=np.zeros(sz)         # a posteri error estimate
-    xhatminus=np.zeros(sz) # a priori estimate of x
-    Pminus=np.zeros(sz)    # a priori error estimate
-    K=np.zeros(sz)         # gain or blending factor
-
-    R = 0.1**2 # estimate of measurement variance, change to see effect
-
-    # intial guesses
-    xhat[0] = 0.0
-    P[0] = 1.0
-
-    for k in range(1,sz[0]):
-        # time update
-        xhatminus[k] = xhat[k-1]
-        Pminus[k] = P[k-1]+Q
-
-        # measurement update
-        K[k] = Pminus[k]/( Pminus[k]+R )
-        xhat[k] = xhatminus[k]+K[k]*(data[k]-xhatminus[k])
-        P[k] = (1-K[k])*Pminus[k]        
-    return xhat
+    data_shape = data.shape # Shape of the data.
+    process_variance = 2e-4 # Estimated process variance, Q.    
+    # Instantiating default vectors for filter parameters
+    x_hat = np.zeros(data_shape)      # a posteriori state estimate of x
+    P = np.zeros(data_shape)         # a posteriori estimate error covariance
+    x_hat_bar = np.zeros(data_shape) # a priori state estimate of x
+    P_bar = np.zeros(data_shape)    # a priori estimate error covariance
+    K = np.zeros(data_shape)         # gain or blending factor that minimizes the a posteriori error covariance
+    R = 0.1**2 # estimate of measurement error covariance    
+    x_hat[0] = 0.0 # Initial state value for posteriori state estimate of x
+    P[0] = 1.0 # Initial state value for posteriori estimate error covariance
+    for data_shape_iter in range(1,data_shape[0]):
+        # time update filter parameter equations
+        x_hat_bar[data_shape_iter] = x_hat[data_shape_iter-1]
+        P_bar[data_shape_iter] = P[data_shape_iter-1]+process_variance
+        # measurement update filter parameter equations
+        K[data_shape_iter] = P_bar[data_shape_iter]/( P_bar[data_shape_iter]+R )
+        x_hat[data_shape_iter] = x_hat_bar[data_shape_iter]+K[data_shape_iter]*(data[data_shape_iter]-x_hat_bar[data_shape_iter])
+        P[data_shape_iter] = (1-K[data_shape_iter])*P_bar[data_shape_iter]        
+    return x_hat
    
    
 def portfolio_analyser(weights, returns, risk_free_rate, cov_matrix):
@@ -71,7 +60,7 @@ def arch_volatility_predictor(data):
     # Predicts volatility of ETFs using ARCH model.
     # data: input returns data (% change).
     hyper_models = {'AR': {'best_params': {'p': 2, 'q': 1}}} # Hyper-parameters to optimise predictions.
-    arch_tuned = arch_model(data, **hyper_models['AR']['best_params']).fit(update_freq=3, disp='off') # Fitting arch model on ETF returns data.
+    arch_tuned = arch_model(data, **hyper_models['AR']['best_params'], vol='ARCH').fit(update_freq=3, disp='off') # Fitting arch model on ETF returns data.
     arch_forecast_var = arch_tuned.forecast(horizon=1).variance.iloc[0,0] # Prediction volatility for the next instance.
     return arch_forecast_var
 
@@ -138,6 +127,7 @@ def data_prep(data, feature, window, dropna=True, scale=True):
         data = pd.DataFrame(data_scaled, columns=[feature]) # Scaled data frame used to prepare data.
     else: # Scaling is ignored.
         data = data.to_frame(feature) # Unscaled data frame used to prepare data.
+        #data.reset_index(drop=True, inplace=True)
         
     
     # Creating a sequence of training X data subsets over the configured window.
@@ -172,7 +162,7 @@ def data_prep(data, feature, window, dropna=True, scale=True):
     return data   
     
 def data_prep_arima(data, input_feature, feature, window, dropna=True, scale=True):
-    # Prepares input data for subsequent machine learning operations (LSTM and SVR).
+    # Prepares input data for subsequent machine learning operations (LSTM and ARIMA).
     # data = Actual return data (pd.Series format).
     # input_feature: primary input feature (Actual_Return).
     # feature: name of the estimated feature with variance (Actual_Variance).
@@ -193,6 +183,7 @@ def data_prep_arima(data, input_feature, feature, window, dropna=True, scale=Tru
         data = pd.DataFrame(data_scaled, columns=[feature]) # Scaled data frame used to prepare data.
     else:
         data = data.to_frame(feature) # Unscaled data frame used to prepare data.
+        #data.reset_index(drop=True, inplace=True)
         
     # Creating a sequence of training X data subsets over the configured window.
     result_train_X = [data[feature].iloc[i:i + window].tolist() for i in range(len(data) - window + 1)]    
@@ -240,7 +231,7 @@ def data_prep_arima(data, input_feature, feature, window, dropna=True, scale=Tru
     return data
     
 def data_prep_svr(data, input_feature, feature, window, dropna=True, scale=True):
-    # Prepares input data for subsequent machine learning operations (LSTM and SVR).
+    # Prepares input data for subsequent machine learning operations (SVR).
     # data = Actual return data (pd.Series format).
     # input_feature: primary input feature (Actual_Return).
     # feature: name of the estimated feature with variance (Actual_Variance).
@@ -261,6 +252,7 @@ def data_prep_svr(data, input_feature, feature, window, dropna=True, scale=True)
         data = pd.DataFrame(data_scaled, columns=[feature]) # Scaled data frame used to prepare data.
     else:
         data = data.to_frame(feature) # Unscaled data frame used to prepare data.
+        #data.reset_index(drop=True, inplace=True)
         
     # Creating a sequence of training X data subsets over the configured window.
     result_train_X = [data[feature].iloc[i:i + window].tolist() for i in range(len(data) - window + 1)]    

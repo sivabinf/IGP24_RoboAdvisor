@@ -127,7 +127,7 @@ def data_prep(data, feature, window, dropna=True, scale=True):
         data = pd.DataFrame(data_scaled, columns=[feature]) # Scaled data frame used to prepare data.
     else: # Scaling is ignored.
         data = data.to_frame(feature) # Unscaled data frame used to prepare data.
-        data.reset_index(drop=True, inplace=True)
+        #data.reset_index(drop=True, inplace=True)
         
     
     # Creating a sequence of training X data subsets over the configured window.
@@ -183,7 +183,7 @@ def data_prep_arima(data, input_feature, feature, window, dropna=True, scale=Tru
         data = pd.DataFrame(data_scaled, columns=[feature]) # Scaled data frame used to prepare data.
     else:
         data = data.to_frame(feature) # Unscaled data frame used to prepare data.
-        data.reset_index(drop=True, inplace=True)
+        #data.reset_index(drop=True, inplace=True)
         
     # Creating a sequence of training X data subsets over the configured window.
     result_train_X = [data[feature].iloc[i:i + window].tolist() for i in range(len(data) - window + 1)]    
@@ -252,7 +252,7 @@ def data_prep_svr(data, input_feature, feature, window, dropna=True, scale=True)
         data = pd.DataFrame(data_scaled, columns=[feature]) # Scaled data frame used to prepare data.
     else:
         data = data.to_frame(feature) # Unscaled data frame used to prepare data.
-        data.reset_index(drop=True, inplace=True)
+        #data.reset_index(drop=True, inplace=True)
         
     # Creating a sequence of training X data subsets over the configured window.
     result_train_X = [data[feature].iloc[i:i + window].tolist() for i in range(len(data) - window + 1)]    
